@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lavallette Crash Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1F3EF;
+    --panel:#1F2E2B;
+    --panel-2:#283833;
+    --ink:#1C2321;
+    --ink-soft:#4B5750;
+    --line:#D8DDD4;
+    --sage:#8FA37E;
+    --bike:#2B6CB0;
+    --ped:#6B4C9A;
+    --vehicle:#B0562B;
+    --other:#5B6B73;
+    --fatal:#7A1F1F;
+    --injury:#C9622A;
+    --pdo:#8C9A93;
+    /* crossing harm scale: one hue, three steps, so it reads as a ramp and not
+       as four unrelated categories */
+    --corr-hi:#8C2D1E;
+    --corr-mid:#D08A3C;
+    --corr-lo:#9AA79B;
+    --radius:10px;
+    --shadow: 0 4px 18px rgba(28,35,33,0.16);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  h1,h2,h3,.display{
+    font-family:"Space Grotesk", sans-serif;
+    letter-spacing:-0.01em;
+  }
+  .mono{
+    font-family:"IBM Plex Mono", monospace;
+  }
+
+  #app{
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    /* dvh so a phone's collapsing address bar can't push the sheet off-screen */
+    height:100dvh;
+  }
+
+  header{
+    background:var(--panel);
+    color:#EFF3EE;
+    padding:14px 20px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:6px 20px;
+    z-index:1000;
+    box-shadow: var(--shadow);
+  }
+  header .title-block{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  header h1{font-size:19px; font-weight:600; margin:0; color:#fff;}
+  header .subtitle{font-size:12.5px; color:#B9C4BC; margin:0;}
+  header .demo-flag{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:#F1D8B8;
+    background:rgba(201,98,42,0.18);
+    border:1px solid rgba(201,98,42,0.45);
+    padding:3px 8px;
+    border-radius:5px;
+    white-space:nowrap;
+  }
+
+  /* #main splits into the map plus, on narrow screens, the panel sheet. On wide
+     screens #panels is display:contents and the map is the only flow child, so
+     the same rules give a full-bleed map with overlays. */
+  #main{
+    position:relative;
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+  }
+  #map{
+    flex:1 1 auto;
+    min-height:0;
+    background:#E4E8E1;
+  }
+
+  /* .card is chrome only -- background, border, radius. Where a panel sits is
+     decided per breakpoint below, so neither layout has to undo the other. */
+  .card{
+    background:rgba(255,255,255,0.96);
+    backdrop-filter:blur(6px);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+
+  /* ---- Panel sheet (narrow screens) -------------------------------------
+     The three big panels are in normal flow under the map instead of floating
+     over it, so they can be any height without ever covering the data. */
+  #panels{
+    flex:0 0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    max-height:44vh;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    background:var(--paper);
+    border-top:1px solid var(--line);
+    padding:0 12px 12px;
+    z-index:900;
+  }
+  #panels > .card{
+    box-shadow:none;
+    background:#fff;
+    padding:12px 14px;
+  }
+  #sheetToggle{
+    position:sticky;
+    top:0;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    padding:10px 2px 8px;
+    border:0;
+    background:var(--paper);
+    color:var(--ink-soft);
+    font:inherit;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    font-weight:600;
+    cursor:pointer;
+    text-align:left;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #sheetToggle:focus-visible{
+    outline:2px solid var(--panel);
+    outline-offset:-2px;
+    border-radius:6px;
+  }
+  #sheetToggle .grip{
+    width:34px; height:4px;
+    border-radius:2px;
+    background:var(--line);
+    flex-shrink:0;
+  }
+  #sheetToggle .chev{
+    margin-left:auto;
+    font-size:11px;
+    transition:transform .15s ease;
+  }
+  /* Collapsing only means anything where the sheet is stacked over the map.
+     Same query as `stackedSheet` in the script -- one definition of "stacked". */
+  @media (max-width:819px) and (orientation:portrait){
+    #app.sheet-collapsed #panels{
+      max-height:none;
+      overflow:visible;
+    }
+    #app.sheet-collapsed #panels > :not(#sheetToggle){display:none;}
+    #app.sheet-collapsed #sheetToggle .chev{transform:rotate(180deg);}
+  }
+
+  /* Transparent by default; only becomes a box in the floating layout. */
+  #leftStack{display:contents;}
+
+  #controls .check-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:0 12px;
+  }
+  #controls h2{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-soft);
+    margin:0 0 8px 0;
+    font-weight:600;
+  }
+  .check-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:5px 0;
+    font-size:13px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .check-row input{accent-color:var(--panel); width:14px; height:14px;}
+  .swatch{
+    width:18px; height:18px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .swatch svg{width:11px; height:11px;}
+
+  #legend{
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+  /* a wrapping row of keys on narrow screens, one per line once it floats */
+  #legend .rows{display:flex; flex-wrap:wrap; gap:2px 16px;}
+  #legend .row{display:flex; align-items:center; gap:8px; margin:3px 0;}
+  #legend .ring{
+    width:12px; height:12px; border-radius:50%;
+    border:3px solid var(--pdo);
+    background:transparent;
+  }
+
+  /* Small enough to float at every size. Leaflet's panes live inside a
+     transformed .leaflet-map-pane, so no z-index can slot this between the
+     markers and an open popup -- it steps aside instead (see .popup-open). */
+  #stats{
+    position:absolute;
+    top:14px;
+    right:14px;
+    z-index:900;
+    transition:opacity .12s ease;
+    padding:8px 13px;
+    text-align:right;
+  }
+  #stats .count{
+    font-family:"Space Grotesk", sans-serif;
+    font-size:22px;
+    font-weight:700;
+    color:var(--panel);
+    line-height:1;
+  }
+  #stats .label{
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+  }
+
+  .leaflet-popup-content-wrapper{
+    border-radius:8px;
+    box-shadow:var(--shadow);
+  }
+  /* --popup-max-h tracks the live height of the map pane (see syncPopupCap), so
+     a tall photo popup scrolls inside itself rather than running off the map. */
+  .leaflet-popup-content{
+    max-height:var(--popup-max-h, 60vh);
+    overflow-y:auto;
+  }
+  .popup{
+    font-size:13px;
+    min-width:min(190px, 58vw);
+  }
+  .popup .ptype{
+    display:inline-block;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:2px 7px;
+    border-radius:4px;
+    color:#fff;
+    margin-bottom:6px;
+  }
+  .popup h3{margin:0 0 4px 0; font-size:14.5px;}
+  .popup .meta{color:var(--ink-soft); font-size:12px; margin-bottom:6px;}
+  .popup .desc{margin:6px 0 0 0; line-height:1.4;}
+  .popup .sev{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+  }
+  .popup a.source{
+    display:inline-block;
+    margin-top:8px;
+    font-size:12px;
+    color:var(--bike);
+  }
+
+  /* ---- Crosswalk inventory layer ---- */
+  #controls .section-gap{
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px solid var(--line);
+  }
+  #controls .hint{
+    font-size:10.5px;
+    color:var(--ink-soft);
+    line-height:1.35;
+    margin:4px 0 0 22px;
+  }
+  .swatch.square{border-radius:3px;}
+  .popup.corr{max-width:100%;}
+  .popup .pill-row{display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px;}
+  .popup .pill{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:2px 7px;
+    border-radius:4px;
+    color:#fff;
+    /* a long jurisdiction label wraps inside the pill instead of widening the
+       popup past the screen */
+    max-width:100%;
+    overflow-wrap:anywhere;
+  }
+  .popup .pill.ghost{
+    background:transparent;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+  }
+  .popup .photo{
+    display:block;
+    width:100%;
+    /* A fixed box, not max-height: the popup's height must be known before the
+       photo loads, or Leaflet auto-pans against the wrong size and the popup
+       ends up off the top of the map. Click it for the full, uncropped frame. */
+    height:170px;
+    object-fit:cover;
+    border-radius:6px;
+    margin-top:8px;
+    cursor:zoom-in;
+    background:#E4E8E1;
+  }
+  .popup .caption{
+    font-size:11px;
+    color:var(--ink-soft);
+    line-height:1.35;
+    margin:5px 0 0 0;
+  }
+  .popup .thumbs{display:flex; gap:5px; margin-top:7px; flex-wrap:wrap;}
+  .popup .thumbs img{
+    width:48px; height:36px;
+    object-fit:cover;
+    border-radius:4px;
+    cursor:pointer;
+    border:2px solid transparent;
+    background:#E4E8E1;
+  }
+  .popup .thumbs img.active{border-color:var(--panel);}
+  .popup .caption.reported{
+    border-left:2px solid var(--line);
+    padding-left:6px;
+    margin-top:7px;
+  }
+  .popup .paving{
+    font-size:11px;
+    line-height:1.4;
+    color:var(--ink-soft);
+    margin-top:7px;
+    padding-top:6px;
+    border-top:1px solid var(--line);
+  }
+  .popup .paving b{color:var(--ink); font-weight:600;}
+  .popup .paving .due{color:#7A4318;}
+  .popup .paving a{color:var(--bike);}
+
+  /* ---- Worst-crossings panel ---- */
+  /* Visible from the start: unlike the Hopewell original -- where this panel
+     belonged to an optional survey layer -- the ranking is the point of the page. */
+  #priority{display:block;}
+  #priority h2{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    color:var(--ink-soft);
+    margin:0 0 2px 0;
+    font-weight:600;
+  }
+  #priority .sub{font-size:10.5px; color:var(--ink-soft); line-height:1.35; margin:0 0 8px 0;}
+  #priority ol{margin:0; padding:0; list-style:none;}
+  #priority li{
+    padding:7px 0;
+    border-top:1px solid var(--line);
+    cursor:pointer;
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+  }
+  #priority li:hover .pname{text-decoration:underline;}
+  #priority .rank{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:11px;
+    font-weight:700;
+    color:#fff;
+    background:var(--panel);
+    border-radius:4px;
+    padding:1px 5px;
+    flex-shrink:0;
+    margin-top:1px;
+  }
+  #priority .pname{font-size:12.5px; font-weight:600; line-height:1.3; color:var(--ink);}
+  #priority .why{font-size:10.5px; color:var(--ink-soft); line-height:1.4; margin-top:2px;}
+  #priority .why .harm{color:var(--injury); font-weight:600;}
+  #priority .what{flex:1; min-width:0;}
+  #priority .score{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    font-variant-numeric:tabular-nums;
+    padding-top:1px;
+  }
+  #priority .caveat{
+    font-size:10px;
+    color:var(--ink-soft);
+    line-height:1.4;
+    margin:9px 0 0 0;
+    padding-top:8px;
+    border-top:1px solid var(--line);
+  }
+
+  /* an open popup owns the map; the crash count can wait */
+  #app.popup-open #stats{opacity:0; pointer-events:none;}
+
+  /* =======================================================================
+     Layout modes. Each one states its own placement rather than undoing the
+     other, so there is nothing to keep in sync when a panel changes size.
+       < 820px portrait : map on top, panels in a collapsible sheet below
+       < 820px landscape: map beside a full-height panel column
+       >= 820px         : panels lifted into floating overlays on the map
+     ======================================================================= */
+
+  /* -- narrow + short: a side column keeps the map from being squeezed flat -- */
+  @media (max-width:819px) and (orientation:landscape){
+    #main{flex-direction:row-reverse;}
+    #panels{
+      flex:0 0 clamp(190px, 42vw, 300px);
+      max-height:none;
+      border-top:0;
+      border-right:1px solid var(--line);
+      padding:12px;
+    }
+    #sheetToggle{display:none;}
+    #controls .check-grid{grid-template-columns:1fr;}
+    #legend .rows{display:block;}
+  }
+
+  /* -- wide: the panels float over a full-bleed map -- */
+  @media (min-width:820px){
+    #panels{display:contents;}
+    #sheetToggle{display:none;}
+    #controls .check-grid{display:block;}
+    #legend .rows{display:block;}
+
+    /* One column owns the left edge. The legend keeps its bottom-left home via
+       margin-top:auto when there is room; when the window is too short for both
+       the auto margin collapses and the column scrolls, instead of the two
+       panels growing into each other. */
+    #leftStack{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      position:absolute;
+      top:14px; bottom:14px; left:14px;
+      width:230px;
+      z-index:900;
+      overflow-y:auto;
+      pointer-events:none;   /* the empty gap must not eat map drags */
+    }
+    #leftStack > *{pointer-events:auto; flex-shrink:0;}
+    #controls{padding:14px;}
+    #legend{padding:12px 14px; margin-top:auto;}
+    #priority{
+      position:absolute;
+      top:70px; right:14px;
+      z-index:900;
+      width:262px;
+      padding:12px 14px;
+      /* Relative to the map pane, not the window, so the header can grow.
+         70px top offset + 100px clearance for Leaflet's bottom-right control
+         stack (zoom buttons + attribution, ~91px tall at any window size). */
+      max-height:calc(100% - 70px - 100px);
+      overflow-y:auto;
+    }
+  }
+
+  /* -- phone-sized: bigger hit targets, and drop the header line the map
+        itself already says -- */
+  @media (max-width:640px){
+    header{padding:9px 14px; gap:4px 12px;}
+    header h1{font-size:17px;}
+    header .subtitle{display:none;}
+    header .demo-flag{font-size:10px; padding:2px 7px;}
+
+    #stats{top:10px; right:10px; padding:6px 11px;}
+    #stats .count{font-size:17px;}
+    #stats .label{font-size:9.5px;}
+
+    #panels{max-height:46vh;}
+    .check-row{padding:9px 0; font-size:14px;}
+    .check-row input{width:18px; height:18px;}
+    #controls .hint{margin-left:0; font-size:11px;}
+    #legend{font-size:12px;}
+    #priority .pname{font-size:13.5px;}
+    #priority .why{font-size:11.5px;}
+    #priority .sub, #priority .caveat{font-size:11px;}
+    #priority li{padding:9px 0;}
+
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="title-block">
+      <h1>Lavallette Crash Map</h1>
+      <p class="subtitle">Where crashes happen in Lavallette Borough, NJ &mdash; and which Route 35 crossings are worst</p>
+    </div>
+    <span class="demo-flag">Source: NJDOT crash records, 2018&ndash;2022</span>
+  </header>
+
+  <div id="main">
+    <div id="map"></div>
+
+    <!-- On narrow screens these three are a scrollable sheet under the map; at
+         >=820px #panels is display:contents and they float over it. -->
+    <div id="panels">
+      <button id="sheetToggle" type="button" aria-expanded="true" aria-controls="panels">
+        <span class="grip" aria-hidden="true"></span>
+        <span class="sheet-label">Filters &amp; legend</span>
+        <span class="chev" aria-hidden="true">&#9660;</span>
+      </button>
+
+    <div id="leftStack">
+    <div id="controls" class="card">
+      <h2>Crash type</h2>
+      <div class="check-grid">
+        <label class="check-row"><input type="checkbox" data-type="bicycle" checked>
+          <span class="swatch" style="background:var(--bike)"></span> Bicycle</label>
+        <label class="check-row"><input type="checkbox" data-type="pedestrian" checked>
+          <span class="swatch" style="background:var(--ped)"></span> Pedestrian</label>
+        <label class="check-row"><input type="checkbox" data-type="vehicle" checked>
+          <span class="swatch" style="background:var(--vehicle)"></span> Vehicle only</label>
+        <label class="check-row"><input type="checkbox" data-type="other" checked>
+          <span class="swatch" style="background:var(--other)"></span> Other</label>
+      </div>
+
+      <div class="section-gap">
+        <h2>Other layers</h2>
+        <label class="check-row"><input type="checkbox" id="corridorToggle" checked>
+          <span class="swatch square" style="background:var(--corr-hi)"></span> Route&nbsp;35 crossings</label>
+        <p class="hint">Route 35 runs through town as two one-way roads about
+          140&nbsp;m apart. Each bar is the stretch of a side street between them
+          &mdash; what you cross to reach the beach &mdash; shaded by how much
+          crash harm is recorded there.</p>
+      </div>
+    </div>
+
+    <div id="legend" class="card">    </div>
+
+    <div id="legend" class="card">
+      <div style="font-weight:600; margin-bottom:6px; color:var(--ink);">Ring = severity</div>
+      <div class="rows">
+        <div class="row"><span class="ring" style="border-color:var(--fatal)"></span> Fatal</div>
+        <div class="row"><span class="ring" style="border-color:var(--injury)"></span> Injury</div>
+        <div class="row"><span class="ring" style="border-color:var(--pdo)"></span> Property damage only</div>
+      </div>
+      <div id="legendCorr" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--line);">
+        <div style="font-weight:600; margin-bottom:6px; color:var(--ink);">Crossing harm score</div>
+        <div class="rows">
+          <div class="row"><span class="swatch square" style="background:var(--corr-hi); width:12px; height:12px;"></span> Highest</div>
+          <div class="row"><span class="swatch square" style="background:var(--corr-mid); width:12px; height:12px;"></span> Middle</div>
+          <div class="row"><span class="swatch square" style="background:var(--corr-lo); width:12px; height:12px;"></span> Lowest</div>
+          <div class="row" style="margin-top:4px;">Weighted by injury, and by whether<br>anyone was outside a vehicle.</div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /#leftStack -->
+
+    <div id="priority" class="card">
+      <h2>Worst Route&nbsp;35 crossings</h2>
+      <p class="sub">Ranked by recorded crash harm, 2018&ndash;2022. Tap to zoom.</p>
+      <ol></ol>
+      <p class="caveat"></p>
+    </div>
+    </div><!-- /#panels -->
+
+    <div id="stats" class="card">
+      <div class="count mono" id="statCount">0</div>
+      <div class="label">crashes shown</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+// ============================================================================
+// DATA SOURCE
+// Unlike the Hopewell version this repo came from, the crash data is a file in
+// the repo (data/crashes.csv), not a Google Sheet: it is 5 closed years of NJDOT
+// records rather than a living log of local police reports, so there is nothing
+// to edit week to week. Regenerate it with scripts/pull_njdot.py +
+// scripts/build_rows.py when NJDOT publishes another year.
+//
+// SHEET_URL is the escape hatch. Set it to a published-to-web CSV link and the
+// site reads that instead, which is what you want the day somebody starts
+// logging current-year crashes by hand -- no code change beyond this line.
+// ============================================================================
+const SHEET_URL = "";                       // "" = use the file below
+const LOCAL_CSV = "data/crashes.csv";
+const DATA_URL = SHEET_URL || LOCAL_CSV;
+
+// Route 35 geometry, and every junction in the borough, from one cached Overpass
+// query (scripts/build_streets.py). Needed for the crossings layer only -- the
+// crash pins carry their own coordinates.
+const STREETS_URL = "data/streets.json";
+
+// The years the crash file actually covers. Shown in the panel so nobody reads
+// a 5-year total as an annual rate, and so the ~3-year NJDOT lag is visible.
+const YEARS_LABEL = "2018\u20132022";
+
+// ---- Visual config -------------------------------------------------------
+const TYPE_COLOR = { bicycle:"#2B6CB0", pedestrian:"#6B4C9A", vehicle:"#B0562B", other:"#5B6B73" };
+const TYPE_LABEL = { bicycle:"Bicycle", pedestrian:"Pedestrian", vehicle:"Vehicle only", other:"Other" };
+const SEV_COLOR  = { fatal:"#7A1F1F", injury:"#C9622A", property_damage:"#8C9A93" };
+const SEV_LABEL  = { fatal:"Fatal", injury:"Injury", property_damage:"Property damage only" };
+
+const ICONS = {
+  bicycle: '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="17" r="3.2"/><circle cx="18" cy="17" r="3.2"/><path d="M6 17l4-9h4l3 9M10 8h4M9.5 8L13 17"/></svg>',
+  pedestrian: '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.1" fill="white" stroke="none"/><path d="M12 8v5M12 13l-3 6M12 13l3 6M9 11l-2.5 2M15 11l2.5 2"/></svg>',
+  vehicle: '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l1.5-5.5A2 2 0 0 1 7.4 9h9.2a2 2 0 0 1 1.9 1.5L20 16"/><rect x="3" y="16" width="18" height="3.2" rx="1"/><circle cx="7.5" cy="19.2" r="1.3" fill="white" stroke="none"/><circle cx="16.5" cy="19.2" r="1.3" fill="white" stroke="none"/></svg>',
+  other: '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="white" stroke="none"/></svg>'
+};
+
+// ---- Map setup -------------------------------------------------------------
+// Lavallette is a long, narrow barrier-island grid, so the whole borough fits
+// at z15; fitBounds() on the crossings tightens this once they load.
+const map = L.map('map', { zoomControl:false }).setView([39.9700, -74.0695], 15);
+L.control.zoom({ position:'bottomright' }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution:'&copy; OpenStreetMap &copy; CARTO',
+  maxZoom:19
+}).addTo(map);
+
+// ---- Panel sheet ------------------------------------------------------------
+// Below 820px the panels sit under (or beside) the map in normal flow; the
+// toggle lets the map go near full-screen. Above 820px #panels is
+// display:contents and the button is hidden, so the class is inert there.
+const appEl = document.getElementById('app');
+const sheetToggle = document.getElementById('sheetToggle');
+
+function setSheetCollapsed(collapsed){
+  appEl.classList.toggle('sheet-collapsed', collapsed);
+  sheetToggle.setAttribute('aria-expanded', String(!collapsed));
+  map.invalidateSize();  // the map pane just changed height
+}
+sheetToggle.addEventListener('click', () => {
+  setSheetCollapsed(!appEl.classList.contains('sheet-collapsed'));
+});
+
+// True only in the stacked layout, where the sheet is between the reader and
+// the map. In the landscape column and on desktop, both are visible at once.
+const stackedSheet = window.matchMedia('(max-width:819px) and (orientation:portrait)');
+
+// Popups are bound once, so cap them against the narrowest viewport they may be
+// opened in. The min-widths in CSS are vw-based and keep up with rotation.
+const POPUP_OPTS = {
+  maxWidth: Math.max(220, Math.min(300, window.innerWidth - 44)),
+  autoPanPadding: [12, 12]
+};
+
+// Bound popups by the map pane rather than the window, so they stay inside the
+// map in every layout. Leaflet fires 'resize' for window resizes, rotation and
+// invalidateSize(), which is every way the pane can change.
+function syncPopupCap(){
+  const h = document.getElementById('map').clientHeight;
+  document.documentElement.style.setProperty(
+    '--popup-max-h', Math.max(150, h - 90) + 'px');
+}
+map.on('resize', syncPopupCap);
+syncPopupCap();
+
+// Opening a popup in the stacked layout means the reader is looking at the map,
+// so hand the map the screen. update() re-runs Leaflet's auto-pan against the
+// pane's new height.
+map.on('popupopen', (e) => {
+  appEl.classList.add('popup-open');
+  if (stackedSheet.matches && !appEl.classList.contains('sheet-collapsed')){
+    setSheetCollapsed(true);
+    e.popup.update();
+  }
+});
+map.on('popupclose', () => appEl.classList.remove('popup-open'));
+
+let allCrashes = [];
+let markers = [];
+let activeTypes = new Set(['bicycle','pedestrian','vehicle','other']);
+
+function makeIcon(crash){
+  const ring = SEV_COLOR[crash.severity] || '#999';
+  const fill = TYPE_COLOR[crash.crash_type] || '#666';
+  const glyph = ICONS[crash.crash_type] || ICONS.other;
+  const html = `
+    <div style="
+      width:30px;height:30px;border-radius:50%;
+      background:${fill};
+      border:3px solid ${ring};
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 2px 6px rgba(0,0,0,0.35);">
+      <div style="width:15px;height:15px;">${glyph}</div>
+    </div>`;
+  return L.divIcon({ html, className:'', iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-14] });
+}
+
+function popupHTML(crash){
+  const typeColor = TYPE_COLOR[crash.crash_type] || '#666';
+  const typeLabel = TYPE_LABEL[crash.crash_type] || 'Other';
+  const sevLabel = SEV_LABEL[crash.severity] || crash.severity || 'Unknown';
+  const sevColor = SEV_COLOR[crash.severity] || '#666';
+  const dateStr = crash.date ? crash.date + (crash.time ? ' · ' + crash.time : '') : '';
+  const src = crash.source_url ? `<a class="source" href="${crash.source_url}" target="_blank" rel="noopener">View source →</a>` : '';
+  const desc = crash.description ? `<p class="desc">${crash.description}</p>` : '';
+  return `
+    <div class="popup">
+      <span class="ptype" style="background:${typeColor}">${typeLabel}</span>
+      <h3>${crash.location || 'Unspecified location'}</h3>
+      <div class="meta mono">${dateStr}</div>
+      <div class="meta">${crash.municipality || ''}</div>
+      <div class="sev" style="color:${sevColor}">${sevLabel}</div>
+      ${desc}
+      ${crash.corridor ? `<p class="desc" style="opacity:.75">Placed between the two
+        Route&nbsp;35 roadways: the crash record names <em>Route&nbsp;35</em> and
+        ${crash.corridor}, but not which of the two it was on.</p>` : ''}
+      ${src}
+    </div>`;
+}
+
+// Fan out pins that share the exact same coordinates so each stays clickable.
+// Crashes at one intersection (e.g. several reports at Broad St & Greenwood Ave)
+// often carry identical lat/lng; without this they stack into one un-clickable
+// pin. Positions are display-only and don't change the underlying data.
+const FANOUT_RADIUS = 0.00009; // ~10 m — separates 30px icons at street-level zoom
+function fanOut(crashes){
+  const groups = new Map();
+  crashes.forEach(c => {
+    const key = c.lat.toFixed(6) + ',' + c.lng.toFixed(6);
+    (groups.get(key) || groups.set(key, []).get(key)).push(c);
+  });
+  const placed = [];
+  groups.forEach(group => {
+    if (group.length === 1){
+      placed.push({ crash: group[0], lat: group[0].lat, lng: group[0].lng });
+      return;
+    }
+    const n = group.length;
+    const cosLat = Math.cos(group[0].lat * Math.PI / 180) || 1;
+    group.forEach((c, i) => {
+      const ang = (2 * Math.PI * i) / n - Math.PI / 2; // first pin at top, then clockwise
+      placed.push({
+        crash: c,
+        lat: c.lat + FANOUT_RADIUS * Math.cos(ang),
+        lng: c.lng + (FANOUT_RADIUS * Math.sin(ang)) / cosLat
+      });
+    });
+  });
+  return placed;
+}
+
+function render(){
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  const visible = allCrashes.filter(c =>
+    activeTypes.has(c.crash_type) && c.lat && c.lng && !isNaN(c.lat) && !isNaN(c.lng));
+  fanOut(visible).forEach(({ crash, lat, lng }) => {
+    const marker = L.marker([lat, lng], { icon: makeIcon(crash) });
+    marker.bindPopup(popupHTML(crash));
+    marker.addTo(map);
+    markers.push(marker);
+  });
+  document.getElementById('statCount').textContent = markers.length;
+}
+
+function normalizeRow(r){
+  return {
+    id: r.id,
+    date: (r.date || '').trim(),
+    time: (r.time || '').trim(),
+    municipality: (r.municipality || '').trim(),
+    location: (r.location || '').trim(),
+    lat: parseFloat(r.lat),
+    lng: parseFloat(r.lng),
+    crash_type: (r.crash_type || 'other').trim().toLowerCase(),
+    corridor: (r.corridor || '').trim(),
+    jurisdiction: (r.jurisdiction || '').trim(),
+    severity: (r.severity || 'property_damage').trim().toLowerCase(),
+    description: (r.description || '').trim(),
+    source_url: (r.source_url || '').trim()
+  };
+}
+
+function showError(){
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  allCrashes = [];
+  const el = document.getElementById('statCount');
+  el.textContent = '—';
+  el.title = 'Could not load crash data from the Google Sheet.';
+  document.querySelector('#stats .label').textContent = 'data unavailable';
+}
+
+// Fit the view to the 28 crossings once the map container actually has a size.
+//
+// It has none at load: #map is inside a layout that is still settling, and the
+// browser pane may be hidden entirely, in which case requestAnimationFrame never
+// runs at all. A ResizeObserver fires the moment the element gets a box -- on
+// first paint, or later when a hidden pane is opened -- so the fit happens either
+// way. Until it does the constructor's setView already shows the whole borough,
+// so a fit that never comes costs nothing.
+function fitToCorridors(pts){
+  if (!pts.length) return;
+  const bounds = L.latLngBounds(pts).pad(0.12);
+  const fit = () => {
+    const size = map.getSize();
+    if (size.x < 40 || size.y < 40) return false;   // not laid out yet
+    map.invalidateSize();
+    map.fitBounds(bounds);
+    return true;
+  };
+  if (fit()) return;
+  const ro = new ResizeObserver(() => { if (fit()) ro.disconnect(); });
+  ro.observe(document.getElementById('map'));
+}
+
+function init(){
+  loadCorridors().then(() => {
+    map.addLayer(corridorLayer);
+    const pts = Object.values(corridors).flatMap(c => c.line);
+    fitToCorridors(pts);
+  });
+  Papa.parse(DATA_URL, {
+    download:true,
+    header:true,
+    skipEmptyLines:true,
+    complete: (res) => {
+      allCrashes = res.data.map(normalizeRow);
+      render();
+      // the ranking is computed from the crash rows, so it waits for both loads
+      loadCorridors().then(renderPriorities);
+    },
+    error: () => { console.error('Could not load crash data from DATA_URL'); showError(); }
+  });
+}
+
+// ============================================================================
+// ROUTE 35 CROSSINGS LAYER + RANKING
+//
+// The single fact that shapes this whole layer: Route 35 crosses Lavallette as
+// TWO one-way roadways about 140 m apart (Anna O Hankins Blvd and Grand Central
+// Ave), and an NJDOT crash record names only "NJ 35" -- never which of the two.
+// So a crash cannot honestly be drawn at a point on one roadway.
+//
+// What it is drawn as instead is a CORRIDOR: the stretch of the side street
+// running between the two roadways. That is a real thing a person does -- it is
+// what you walk or ride to get from the bay side to the beach -- and it is
+// exactly as precise as the data, no more. 190 of the borough's 209 recorded
+// crashes fall on one of these 28 corridors.
+// ============================================================================
+const CORRIDOR_URL = STREETS_URL;
+
+// Corridor popups carry more prose than a crash pin does, so they get their own
+// floor on the width. It has to be Leaflet's minWidth and not CSS on the inner
+// div: a min-width on the child makes it wider than the content box Leaflet
+// measured, and the overflow is clipped rather than wrapped.
+const CORR_POPUP_OPTS = Object.assign({}, POPUP_OPTS, { minWidth: 240 });
+
+// Harm weights. Deliberately simple and additive so the ranking can be argued
+// with rather than taken on faith. Someone hurt OUTSIDE a vehicle counts for
+// roughly double someone inside one: on a beach street the exposed user is the
+// one the street design is failing.
+const HARM = {
+  pedestrian: { fatal:12, injury:6, property_damage:2 },
+  bicycle:    { fatal:12, injury:6, property_damage:2 },
+  vehicle:    { fatal:4,  injury:2, property_damage:0.5 },
+  other:      { fatal:4,  injury:2, property_damage:0.5 }
+};
+function harmOf(crash){
+  const row = HARM[crash.crash_type] || HARM.other;
+  return row[crash.severity] ?? 0.5;
+}
+
+let corridors = null;         // name -> geometry, from streets.json
+let corridorLayer = L.layerGroup();
+let corridorShowing = true;
+
+function loadCorridors(){
+  if (corridors) return Promise.resolve(corridors);
+  return fetch(CORRIDOR_URL)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(d => { corridors = d.corridors || {}; return corridors; })
+    .catch(err => { console.error('Could not load ' + CORRIDOR_URL, err);
+                    corridors = {}; return corridors; });
+}
+
+// Score every corridor from the crash rows currently loaded. Recomputed rather
+// than baked in, so the numbers always match the pins on screen -- including
+// after the crash-type checkboxes narrow them.
+function scoreCorridors(crashes){
+  const out = new Map();
+  crashes.forEach(c => {
+    if (!c.corridor) return;
+    let e = out.get(c.corridor);
+    if (!e) out.set(c.corridor, e = { name:c.corridor, score:0, n:0, byType:{}, worst:null, summer:0 });
+    e.score += harmOf(c);
+    e.n += 1;
+    e.byType[c.crash_type] = (e.byType[c.crash_type] || 0) + 1;
+    const mo = parseInt(c.date.slice(5,7), 10);
+    if (mo >= 6 && mo <= 9) e.summer += 1;
+    if (!e.worst || harmOf(c) > harmOf(e.worst)) e.worst = c;
+  });
+  return [...out.values()].sort((a,b) => b.score - a.score || b.n - a.n);
+}
+
+function corridorColor(score, max){
+  if (!max) return 'var(--corr-lo)';
+  const f = score / max;
+  return f >= 0.66 ? '#8C2D1E' : f >= 0.33 ? '#D08A3C' : '#9AA79B';
+}
+
+function peopleOutside(e){
+  return (e.byType.pedestrian || 0) + (e.byType.bicycle || 0);
+}
+
+function corridorPopupHTML(e, rank){
+  const pb = peopleOutside(e);
+  const bits = Object.entries(e.byType)
+    .sort((a,b) => b[1]-a[1])
+    .map(([t,n]) => `${n} ${(TYPE_LABEL[t] || t).toLowerCase()}`).join(' · ');
+  return `
+    <div class="popup corr">
+      <span class="ptype" style="background:${corridorColor(e.score, e.max)}">#${rank} worst</span>
+      <h3>Route 35 &amp; ${e.name}</h3>
+      <div class="meta mono">${e.n} crash${e.n===1?'':'es'} · ${YEARS_LABEL}</div>
+      <div class="sev" style="color:var(--ink)">Harm score ${e.score.toFixed(1)}</div>
+      <p class="desc">${bits}.</p>
+      ${pb ? `<p class="desc"><strong>${pb} involved someone outside a vehicle</strong>
+        (on foot or on a bike).</p>` : ''}
+      ${e.summer ? `<p class="desc">${e.summer} of ${e.n} happened June&ndash;September.</p>` : ''}
+      <p class="desc" style="opacity:.75">Route 35 is a <strong>state</strong>
+        highway, so changes here are NJDOT's to make, not the borough's.</p>
+    </div>`;
+}
+
+function renderCorridors(scored){
+  corridorLayer.clearLayers();
+  if (!corridors) return;
+  const max = scored.length ? scored[0].score : 0;
+  scored.forEach((e, i) => {
+    const geom = corridors[e.name];
+    if (!geom) return;
+    e.max = max;
+    const line = L.polyline(geom.line, {
+      color: corridorColor(e.score, max),
+      weight: 9, opacity: 0.75, lineCap: 'butt'
+    });
+    line.bindPopup(corridorPopupHTML(e, i + 1), CORR_POPUP_OPTS);
+    e.layer = line;              // so the ranked list can open this same popup
+    corridorLayer.addLayer(line);
+  });
+  // Corridors with no recorded crash still exist; draw them faintly so the layer
+  // reads as "all 28 crossings, shaded" rather than "only the bad ones exist".
+  Object.entries(corridors).forEach(([name, geom]) => {
+    if (scored.some(e => e.name === name)) return;
+    const line = L.polyline(geom.line, {
+      color:'#9AA79B', weight:4, opacity:0.35, dashArray:'2,6', lineCap:'butt'
+    });
+    line.bindPopup(`<div class="popup corr"><h3>Route 35 &amp; ${name}</h3>
+      <div class="meta">No crash on record here, ${YEARS_LABEL}.</div></div>`, CORR_POPUP_OPTS);
+    corridorLayer.addLayer(line);
+  });
+}
+
+// ---- the ranked list in the right-hand panel -------------------------------
+const priorityEl = document.getElementById('priority');
+
+function renderPriorities(){
+  const scored = scoreCorridors(
+    allCrashes.filter(c => activeTypes.has(c.crash_type)));
+  renderCorridors(scored);
+
+  const ol = priorityEl.querySelector('ol');
+  ol.innerHTML = '';
+  scored.slice(0, 5).forEach((e, i) => {
+    const pb = peopleOutside(e);
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span class="rank mono">${i + 1}</span>
+      <span class="what">
+        <span class="pname">${e.name}</span>
+        <span class="why">${e.n} crash${e.n === 1 ? '' : 'es'}${pb
+          ? ` · <span class="harm">${pb} on foot or bike</span>` : ''}</span>
+      </span>
+      <span class="score mono">${e.score.toFixed(0)}</span>`;
+    li.addEventListener('click', () => {
+      const geom = corridors && corridors[e.name];
+      if (!geom) return;
+      // Open on moveend rather than after a timeout matched to the fly duration:
+      // if the animation is cut short (another click, a drag, a tab that was
+      // hidden and so never animated) the popup still lands.
+      map.once('moveend', () => { if (e.layer) e.layer.openPopup(); });
+      map.flyTo(geom.midpoint, 17, { duration:0.6 });
+    });
+    ol.appendChild(li);
+  });
+
+  const total = scored.reduce((a, e) => a + e.n, 0);
+  const outside = scored.reduce((a, e) => a + peopleOutside(e), 0);
+  priorityEl.querySelector('.caveat').innerHTML =
+    `${total} of the borough's crashes sit on one of these ${Object.keys(corridors || {}).length}
+     Route&nbsp;35 crossings; ${outside} involved someone on foot or on a bike.
+     <strong>Proximity is not cause</strong> &mdash; a crash logged at a cross street
+     was not necessarily at the crossing itself, and NJDOT records name the street
+     pair but not the roadway, so each bar covers about 140&nbsp;m.
+     Counts are 5 closed years (${YEARS_LABEL}); NJDOT runs about three years
+     behind, so nothing recent is in here.`;
+}
+
+document.getElementById('corridorToggle').addEventListener('change', (ev) => {
+  corridorShowing = ev.target.checked;
+  if (corridorShowing) map.addLayer(corridorLayer);
+  else map.removeLayer(corridorLayer);
+});
+
+// ---- Controls ---------------------------------------------------------------
+document.querySelectorAll('.check-row input[data-type]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const t = cb.dataset.type;
+    if (cb.checked) activeTypes.add(t); else activeTypes.delete(t);
+    render();
+    renderPriorities();   // the ranking follows the visible crashes
+  });
+});
+
+init();
+</script>
+</body>
+</html>

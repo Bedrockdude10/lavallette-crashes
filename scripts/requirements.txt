@@ -1,0 +1,3 @@
+# Nothing required: every script uses only the Python 3 standard library.
+# (The Hopewell original needed gspread + google-auth to write to a Google
+# Sheet. This build's crash data is a file in the repo, so that is gone.)

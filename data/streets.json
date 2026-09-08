@@ -1,0 +1,1752 @@
+{
+ "area": "Lavallette",
+ "divided_ref": "NJ 35",
+ "attribution": "Road geometry (c) OpenStreetMap contributors, ODbL",
+ "streets": {
+  "Jersey City Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Magee Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "New York Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Camden Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Sturgis Road": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Brown Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Vance Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "New Jersey Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Virginia Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Baltimore Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Kerr Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Princeton Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Anna O Hankins Boulevard": {
+   "ref": "NJ 35",
+   "highway": "trunk",
+   "jurisdiction": "state"
+  },
+  "1st Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Reese Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Guyer Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Ortley Avenue": {
+   "ref": "CR 629",
+   "highway": "secondary",
+   "jurisdiction": "county"
+  },
+  "Elizabeth Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Dickman Drive": {
+   "ref": "CR 2",
+   "highway": "residential",
+   "jurisdiction": "county"
+  },
+  "New Brunswick Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Philadelphia Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Trenton Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Lavallette Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Newark Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Bryn Mawr Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Bond Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Westmont Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "President Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Morton Drive": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Funston Road": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Liggett Road": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Coleman Lane": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Pennsylvania Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Diane Lane": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Bullard Drive": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Washington Avenue": {
+   "ref": "CR 8",
+   "highway": "tertiary",
+   "jurisdiction": "county"
+  },
+  "White Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Bay Boulevard": {
+   "ref": "CR 629",
+   "highway": "secondary",
+   "jurisdiction": "county"
+  },
+  "Hines Court": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Dover Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Pershing Boulevard": {
+   "ref": "CR 2",
+   "highway": "residential",
+   "jurisdiction": "county"
+  },
+  "Brooklyn Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Swan Point Road": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Haddonfield Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "Lavallette Boardwalk": {
+   "ref": "",
+   "highway": "pedestrian",
+   "jurisdiction": "borough"
+  },
+  "West Central Avenue": {
+   "ref": "NJ 35",
+   "highway": "trunk",
+   "jurisdiction": "state"
+  },
+  "Sterling Avenue": {
+   "ref": "",
+   "highway": "residential",
+   "jurisdiction": "borough"
+  },
+  "East Central Avenue": {
+   "ref": "NJ 35",
+   "highway": "trunk",
+   "jurisdiction": "state"
+  },
+  "Grand Central Avenue": {
+   "ref": "NJ 35",
+   "highway": "trunk",
+   "jurisdiction": "state"
+  }
+ },
+ "corridors": {
+  "1st Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "East Central Avenue",
+     "point": [
+      39.959979,
+      -74.07232
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.959849,
+      -74.070674
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.959979,
+     -74.07232
+    ],
+    [
+     39.959849,
+     -74.070674
+    ]
+   ],
+   "midpoint": [
+    39.959914,
+    -74.071497
+   ],
+   "width_m": 141.2
+  },
+  "Bond Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.975791,
+      -74.069704
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.975638,
+      -74.068061
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.975791,
+     -74.069704
+    ],
+    [
+     39.975638,
+     -74.068061
+    ]
+   ],
+   "midpoint": [
+    39.975714,
+    -74.068883
+   ],
+   "width_m": 141.2
+  },
+  "Brooklyn Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.96828,
+      -74.070942
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.968117,
+      -74.069286
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.96828,
+     -74.070942
+    ],
+    [
+     39.968117,
+     -74.069286
+    ]
+   ],
+   "midpoint": [
+    39.968198,
+    -74.070114
+   ],
+   "width_m": 142.4
+  },
+  "Brown Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.971295,
+      -74.070446
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.971125,
+      -74.068785
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.971295,
+     -74.070446
+    ],
+    [
+     39.971125,
+     -74.068785
+    ]
+   ],
+   "midpoint": [
+    39.97121,
+    -74.069615
+   ],
+   "width_m": 143.0
+  },
+  "Bryn Mawr Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.980067,
+      -74.067144
+     ]
+    },
+    {
+     "name": "West Central Avenue",
+     "point": [
+      39.980304,
+      -74.068983
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.980067,
+     -74.067144
+    ],
+    [
+     39.980304,
+     -74.068983
+    ]
+   ],
+   "midpoint": [
+    39.980185,
+    -74.068063
+   ],
+   "width_m": 159.1
+  },
+  "Camden Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.97057,
+      -74.070573
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.9704,
+      -74.068914
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.97057,
+     -74.070573
+    ],
+    [
+     39.9704,
+     -74.068914
+    ]
+   ],
+   "midpoint": [
+    39.970485,
+    -74.069744
+   ],
+   "width_m": 142.8
+  },
+  "Elizabeth Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.962311,
+      -74.071923
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.962158,
+      -74.070281
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.962311,
+     -74.071923
+    ],
+    [
+     39.962158,
+     -74.070281
+    ]
+   ],
+   "midpoint": [
+    39.962235,
+    -74.071102
+   ],
+   "width_m": 141.1
+  },
+  "Guyer Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.975064,
+      -74.069832
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.974897,
+      -74.068195
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.975064,
+     -74.069832
+    ],
+    [
+     39.974897,
+     -74.068195
+    ]
+   ],
+   "midpoint": [
+    39.974981,
+    -74.069014
+   ],
+   "width_m": 140.9
+  },
+  "Haddonfield Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.979334,
+      -74.067363
+     ]
+    },
+    {
+     "name": "West Central Avenue",
+     "point": [
+      39.979499,
+      -74.069114
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.979334,
+     -74.067363
+    ],
+    [
+     39.979499,
+     -74.069114
+    ]
+   ],
+   "midpoint": [
+    39.979416,
+    -74.068239
+   ],
+   "width_m": 150.5
+  },
+  "Jersey City Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.963777,
+      -74.071683
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.96362,
+      -74.070045
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.963777,
+     -74.071683
+    ],
+    [
+     39.96362,
+     -74.070045
+    ]
+   ],
+   "midpoint": [
+    39.963698,
+    -74.070864
+   ],
+   "width_m": 140.8
+  },
+  "Kerr Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.976525,
+      -74.069591
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.976361,
+      -74.067943
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.976525,
+     -74.069591
+    ],
+    [
+     39.976361,
+     -74.067943
+    ]
+   ],
+   "midpoint": [
+    39.976443,
+    -74.068767
+   ],
+   "width_m": 141.8
+  },
+  "Magee Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.972038,
+      -74.070325
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.97186,
+      -74.068672
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.972038,
+     -74.070325
+    ],
+    [
+     39.97186,
+     -74.068672
+    ]
+   ],
+   "midpoint": [
+    39.971949,
+    -74.069499
+   ],
+   "width_m": 142.4
+  },
+  "New Brunswick Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.967545,
+      -74.071076
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.967382,
+      -74.069424
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.967545,
+     -74.071076
+    ],
+    [
+     39.967382,
+     -74.069424
+    ]
+   ],
+   "midpoint": [
+    39.967464,
+    -74.07025
+   ],
+   "width_m": 142.1
+  },
+  "New Jersey Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.964526,
+      -74.07156
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.964362,
+      -74.069919
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.964526,
+     -74.07156
+    ],
+    [
+     39.964362,
+     -74.069919
+    ]
+   ],
+   "midpoint": [
+    39.964444,
+    -74.07074
+   ],
+   "width_m": 141.2
+  },
+  "New York Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.965271,
+      -74.071438
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.965114,
+      -74.069792
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.965271,
+     -74.071438
+    ],
+    [
+     39.965114,
+     -74.069792
+    ]
+   ],
+   "midpoint": [
+    39.965193,
+    -74.070615
+   ],
+   "width_m": 141.5
+  },
+  "Newark Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.96158,
+      -74.072065
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.96141,
+      -74.070405
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.96158,
+     -74.072065
+    ],
+    [
+     39.96141,
+     -74.070405
+    ]
+   ],
+   "midpoint": [
+    39.961495,
+    -74.071235
+   ],
+   "width_m": 142.9
+  },
+  "Ortley Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.977987,
+      -74.069365
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.977828,
+      -74.067707
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.977987,
+     -74.069365
+    ],
+    [
+     39.977828,
+     -74.067707
+    ]
+   ],
+   "midpoint": [
+    39.977908,
+    -74.068536
+   ],
+   "width_m": 142.5
+  },
+  "Pennsylvania Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.966072,
+      -74.071314
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.965913,
+      -74.069663
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.966072,
+     -74.071314
+    ],
+    [
+     39.965913,
+     -74.069663
+    ]
+   ],
+   "midpoint": [
+    39.965992,
+    -74.070489
+   ],
+   "width_m": 142.0
+  },
+  "Philadelphia Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.969763,
+      -74.070698
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.969607,
+      -74.069035
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.969763,
+     -74.070698
+    ],
+    [
+     39.969607,
+     -74.069035
+    ]
+   ],
+   "midpoint": [
+    39.969685,
+    -74.069866
+   ],
+   "width_m": 142.9
+  },
+  "President Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.974287,
+      -74.06996
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.974121,
+      -74.06832
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.974287,
+     -74.06996
+    ],
+    [
+     39.974121,
+     -74.06832
+    ]
+   ],
+   "midpoint": [
+    39.974204,
+    -74.06914
+   ],
+   "width_m": 141.1
+  },
+  "Princeton Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.963043,
+      -74.071804
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.962894,
+      -74.070168
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.963043,
+     -74.071804
+    ],
+    [
+     39.962894,
+     -74.070168
+    ]
+   ],
+   "midpoint": [
+    39.962969,
+    -74.070986
+   ],
+   "width_m": 140.6
+  },
+  "Reese Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.973504,
+      -74.070084
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.97334,
+      -74.068442
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.973504,
+     -74.070084
+    ],
+    [
+     39.97334,
+     -74.068442
+    ]
+   ],
+   "midpoint": [
+    39.973422,
+    -74.069263
+   ],
+   "width_m": 141.3
+  },
+  "Trenton Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.960804,
+      -74.072196
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.960644,
+      -74.070545
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.960804,
+     -74.072196
+    ],
+    [
+     39.960644,
+     -74.070545
+    ]
+   ],
+   "midpoint": [
+    39.960724,
+    -74.071371
+   ],
+   "width_m": 142.0
+  },
+  "Vance Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.972762,
+      -74.070206
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.972602,
+      -74.068559
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.972762,
+     -74.070206
+    ],
+    [
+     39.972602,
+     -74.068559
+    ]
+   ],
+   "midpoint": [
+    39.972682,
+    -74.069382
+   ],
+   "width_m": 141.6
+  },
+  "Virginia Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.966809,
+      -74.071192
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.966648,
+      -74.069543
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.966809,
+     -74.071192
+    ],
+    [
+     39.966648,
+     -74.069543
+    ]
+   ],
+   "midpoint": [
+    39.966729,
+    -74.070368
+   ],
+   "width_m": 141.8
+  },
+  "Washington Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.969011,
+      -74.070826
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.968847,
+      -74.069168
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.969011,
+     -74.070826
+    ],
+    [
+     39.968847,
+     -74.069168
+    ]
+   ],
+   "midpoint": [
+    39.968929,
+    -74.069997
+   ],
+   "width_m": 142.6
+  },
+  "Westmont Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.978705,
+      -74.069244
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.97858,
+      -74.067573
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.978705,
+     -74.069244
+    ],
+    [
+     39.97858,
+     -74.067573
+    ]
+   ],
+   "midpoint": [
+    39.978642,
+    -74.068409
+   ],
+   "width_m": 143.2
+  },
+  "White Avenue": {
+   "ref": "NJ 35",
+   "jurisdiction": "state",
+   "barrels": [
+    {
+     "name": "Anna O Hankins Boulevard",
+     "point": [
+      39.977273,
+      -74.069474
+     ]
+    },
+    {
+     "name": "Grand Central Avenue",
+     "point": [
+      39.977111,
+      -74.067822
+     ]
+    }
+   ],
+   "line": [
+    [
+     39.977273,
+     -74.069474
+    ],
+    [
+     39.977111,
+     -74.067822
+    ]
+   ],
+   "midpoint": [
+    39.977192,
+    -74.068648
+   ],
+   "width_m": 142.1
+  }
+ },
+ "intersections": {
+  "1st Avenue|Baltimore Avenue": [
+   39.960112,
+   -74.073868
+  ],
+  "1st Avenue|Bay Boulevard": [
+   39.960441,
+   -74.077319
+  ],
+  "1st Avenue|Diane Lane": [
+   39.959764,
+   -74.06955
+  ],
+  "1st Avenue|Dover Avenue": [
+   39.959764,
+   -74.06955
+  ],
+  "1st Avenue|East Central Avenue": [
+   39.959979,
+   -74.07232
+  ],
+  "1st Avenue|Grand Central Avenue": [
+   39.959849,
+   -74.070674
+  ],
+  "Anna O Hankins Boulevard|Bond Avenue": [
+   39.975791,
+   -74.069704
+  ],
+  "Anna O Hankins Boulevard|Brooklyn Avenue": [
+   39.96828,
+   -74.070942
+  ],
+  "Anna O Hankins Boulevard|Brown Avenue": [
+   39.971295,
+   -74.070446
+  ],
+  "Anna O Hankins Boulevard|Camden Avenue": [
+   39.97057,
+   -74.070573
+  ],
+  "Anna O Hankins Boulevard|East Central Avenue": [
+   39.960804,
+   -74.072196
+  ],
+  "Anna O Hankins Boulevard|Elizabeth Avenue": [
+   39.962311,
+   -74.071923
+  ],
+  "Anna O Hankins Boulevard|Guyer Avenue": [
+   39.975064,
+   -74.069832
+  ],
+  "Anna O Hankins Boulevard|Jersey City Avenue": [
+   39.963777,
+   -74.071683
+  ],
+  "Anna O Hankins Boulevard|Kerr Avenue": [
+   39.976525,
+   -74.069591
+  ],
+  "Anna O Hankins Boulevard|Magee Avenue": [
+   39.972038,
+   -74.070325
+  ],
+  "Anna O Hankins Boulevard|New Brunswick Avenue": [
+   39.967545,
+   -74.071076
+  ],
+  "Anna O Hankins Boulevard|New Jersey Avenue": [
+   39.964526,
+   -74.07156
+  ],
+  "Anna O Hankins Boulevard|New York Avenue": [
+   39.965271,
+   -74.071438
+  ],
+  "Anna O Hankins Boulevard|Newark Avenue": [
+   39.96158,
+   -74.072065
+  ],
+  "Anna O Hankins Boulevard|Ortley Avenue": [
+   39.977987,
+   -74.069365
+  ],
+  "Anna O Hankins Boulevard|Pennsylvania Avenue": [
+   39.966072,
+   -74.071314
+  ],
+  "Anna O Hankins Boulevard|Philadelphia Avenue": [
+   39.969763,
+   -74.070698
+  ],
+  "Anna O Hankins Boulevard|President Avenue": [
+   39.974287,
+   -74.06996
+  ],
+  "Anna O Hankins Boulevard|Princeton Avenue": [
+   39.963043,
+   -74.071804
+  ],
+  "Anna O Hankins Boulevard|Reese Avenue": [
+   39.973504,
+   -74.070084
+  ],
+  "Anna O Hankins Boulevard|Trenton Avenue": [
+   39.960804,
+   -74.072196
+  ],
+  "Anna O Hankins Boulevard|Vance Avenue": [
+   39.972762,
+   -74.070206
+  ],
+  "Anna O Hankins Boulevard|Virginia Avenue": [
+   39.966809,
+   -74.071192
+  ],
+  "Anna O Hankins Boulevard|Washington Avenue": [
+   39.969011,
+   -74.070826
+  ],
+  "Anna O Hankins Boulevard|West Central Avenue": [
+   39.978705,
+   -74.069244
+  ],
+  "Anna O Hankins Boulevard|Westmont Avenue": [
+   39.978705,
+   -74.069244
+  ],
+  "Anna O Hankins Boulevard|White Avenue": [
+   39.977273,
+   -74.069474
+  ],
+  "Baltimore Avenue|Brooklyn Avenue": [
+   39.968432,
+   -74.072485
+  ],
+  "Baltimore Avenue|Elizabeth Avenue": [
+   39.96246,
+   -74.073487
+  ],
+  "Baltimore Avenue|Jersey City Avenue": [
+   39.963927,
+   -74.073245
+  ],
+  "Baltimore Avenue|New Brunswick Avenue": [
+   39.967692,
+   -74.072609
+  ],
+  "Baltimore Avenue|New Jersey Avenue": [
+   39.964681,
+   -74.073117
+  ],
+  "Baltimore Avenue|New York Avenue": [
+   39.965425,
+   -74.072992
+  ],
+  "Baltimore Avenue|Newark Avenue": [
+   39.961732,
+   -74.073608
+  ],
+  "Baltimore Avenue|Pennsylvania Avenue": [
+   39.966231,
+   -74.072859
+  ],
+  "Baltimore Avenue|Princeton Avenue": [
+   39.963199,
+   -74.073368
+  ],
+  "Baltimore Avenue|Trenton Avenue": [
+   39.960942,
+   -74.073734
+  ],
+  "Baltimore Avenue|Virginia Avenue": [
+   39.966957,
+   -74.072733
+  ],
+  "Baltimore Avenue|Washington Avenue": [
+   39.969158,
+   -74.072362
+  ],
+  "Bay Boulevard|Bond Avenue": [
+   39.975947,
+   -74.071241
+  ],
+  "Bay Boulevard|Brooklyn Avenue": [
+   39.968606,
+   -74.074251
+  ],
+  "Bay Boulevard|Brown Avenue": [
+   39.971471,
+   -74.072156
+  ],
+  "Bay Boulevard|Camden Avenue": [
+   39.970782,
+   -74.072632
+  ],
+  "Bay Boulevard|Elizabeth Avenue": [
+   39.962776,
+   -74.076903
+  ],
+  "Bay Boulevard|Guyer Avenue": [
+   39.975206,
+   -74.071364
+  ],
+  "Bay Boulevard|Jersey City Avenue": [
+   39.964213,
+   -74.076236
+  ],
+  "Bay Boulevard|Kerr Avenue": [
+   39.976613,
+   -74.070411
+  ],
+  "Bay Boulevard|Lavallette Avenue": [
+   39.965536,
+   -74.074074
+  ],
+  "Bay Boulevard|Magee Avenue": [
+   39.972234,
+   -74.07227
+  ],
+  "Bay Boulevard|New Brunswick Avenue": [
+   39.967866,
+   -74.074432
+  ],
+  "Bay Boulevard|New Jersey Avenue": [
+   39.964839,
+   -74.074705
+  ],
+  "Bay Boulevard|New York Avenue": [
+   39.965536,
+   -74.074074
+  ],
+  "Bay Boulevard|Newark Avenue": [
+   39.962054,
+   -74.077038
+  ],
+  "Bay Boulevard|Ortley Avenue": [
+   39.978012,
+   -74.070629
+  ],
+  "Bay Boulevard|Pennsylvania Avenue": [
+   39.966321,
+   -74.074354
+  ],
+  "Bay Boulevard|Pershing Boulevard": [
+   39.967866,
+   -74.074432
+  ],
+  "Bay Boulevard|Philadelphia Avenue": [
+   39.96997,
+   -74.072942
+  ],
+  "Bay Boulevard|President Avenue": [
+   39.974393,
+   -74.071322
+  ],
+  "Bay Boulevard|Princeton Avenue": [
+   39.963552,
+   -74.076853
+  ],
+  "Bay Boulevard|Reese Avenue": [
+   39.973621,
+   -74.071292
+  ],
+  "Bay Boulevard|Swan Point Road": [
+   39.978423,
+   -74.070651
+  ],
+  "Bay Boulevard|Vance Avenue": [
+   39.972927,
+   -74.071809
+  ],
+  "Bay Boulevard|Virginia Avenue": [
+   39.967117,
+   -74.074619
+  ],
+  "Bay Boulevard|Washington Avenue": [
+   39.969286,
+   -74.073558
+  ],
+  "Bay Boulevard|White Avenue": [
+   39.977336,
+   -74.07031
+  ],
+  "Bond Avenue|Grand Central Avenue": [
+   39.975638,
+   -74.068061
+  ],
+  "Brooklyn Avenue|Grand Central Avenue": [
+   39.968117,
+   -74.069286
+  ],
+  "Brown Avenue|Grand Central Avenue": [
+   39.971125,
+   -74.068785
+  ],
+  "Bryn Mawr Avenue|Grand Central Avenue": [
+   39.980067,
+   -74.067144
+  ],
+  "Bryn Mawr Avenue|Sterling Avenue": [
+   39.980202,
+   -74.068458
+  ],
+  "Bryn Mawr Avenue|West Central Avenue": [
+   39.980304,
+   -74.068983
+  ],
+  "Bullard Drive|Dickman Drive": [
+   39.964068,
+   -74.08088
+  ],
+  "Bullard Drive|Newark Avenue": [
+   39.963379,
+   -74.083256
+  ],
+  "Bullard Drive|Pershing Boulevard": [
+   39.96311,
+   -74.08419
+  ],
+  "Camden Avenue|Grand Central Avenue": [
+   39.9704,
+   -74.068914
+  ],
+  "Coleman Lane|Ortley Avenue": [
+   39.97802,
+   -74.0715
+  ],
+  "Coleman Lane|White Avenue": [
+   39.977426,
+   -74.071463
+  ],
+  "Diane Lane|Dover Avenue": [
+   39.959764,
+   -74.06955
+  ],
+  "Dickman Drive|Funston Road": [
+   39.966316,
+   -74.07928
+  ],
+  "Dickman Drive|Hines Court": [
+   39.962556,
+   -74.078916
+  ],
+  "Dickman Drive|Liggett Road": [
+   39.965096,
+   -74.081278
+  ],
+  "Dickman Drive|Morton Drive": [
+   39.965096,
+   -74.081278
+  ],
+  "Dickman Drive|Newark Avenue": [
+   39.962228,
+   -74.078816
+  ],
+  "Dickman Drive|Pershing Boulevard": [
+   39.967726,
+   -74.076887
+  ],
+  "Dickman Drive|Sturgis Road": [
+   39.96347,
+   -74.080102
+  ],
+  "Dover Avenue|Lavallette Boardwalk": [
+   39.959578,
+   -74.067795
+  ],
+  "East Central Avenue|Trenton Avenue": [
+   39.960804,
+   -74.072196
+  ],
+  "Elizabeth Avenue|Grand Central Avenue": [
+   39.962158,
+   -74.070281
+  ],
+  "Funston Road|Pershing Boulevard": [
+   39.967112,
+   -74.080035
+  ],
+  "Grand Central Avenue|Guyer Avenue": [
+   39.974897,
+   -74.068195
+  ],
+  "Grand Central Avenue|Haddonfield Avenue": [
+   39.979334,
+   -74.067363
+  ],
+  "Grand Central Avenue|Jersey City Avenue": [
+   39.96362,
+   -74.070045
+  ],
+  "Grand Central Avenue|Kerr Avenue": [
+   39.976361,
+   -74.067943
+  ],
+  "Grand Central Avenue|Magee Avenue": [
+   39.97186,
+   -74.068672
+  ],
+  "Grand Central Avenue|New Brunswick Avenue": [
+   39.967382,
+   -74.069424
+  ],
+  "Grand Central Avenue|New Jersey Avenue": [
+   39.964362,
+   -74.069919
+  ],
+  "Grand Central Avenue|New York Avenue": [
+   39.965114,
+   -74.069792
+  ],
+  "Grand Central Avenue|Newark Avenue": [
+   39.96141,
+   -74.070405
+  ],
+  "Grand Central Avenue|Ortley Avenue": [
+   39.977828,
+   -74.067707
+  ],
+  "Grand Central Avenue|Pennsylvania Avenue": [
+   39.965913,
+   -74.069663
+  ],
+  "Grand Central Avenue|Philadelphia Avenue": [
+   39.969607,
+   -74.069035
+  ],
+  "Grand Central Avenue|President Avenue": [
+   39.974121,
+   -74.06832
+  ],
+  "Grand Central Avenue|Princeton Avenue": [
+   39.962894,
+   -74.070168
+  ],
+  "Grand Central Avenue|Reese Avenue": [
+   39.97334,
+   -74.068442
+  ],
+  "Grand Central Avenue|Trenton Avenue": [
+   39.960644,
+   -74.070545
+  ],
+  "Grand Central Avenue|Vance Avenue": [
+   39.972602,
+   -74.068559
+  ],
+  "Grand Central Avenue|Virginia Avenue": [
+   39.966648,
+   -74.069543
+  ],
+  "Grand Central Avenue|Washington Avenue": [
+   39.968847,
+   -74.069168
+  ],
+  "Grand Central Avenue|Westmont Avenue": [
+   39.97858,
+   -74.067573
+  ],
+  "Grand Central Avenue|White Avenue": [
+   39.977111,
+   -74.067822
+  ],
+  "Haddonfield Avenue|West Central Avenue": [
+   39.979499,
+   -74.069114
+  ],
+  "Hines Court|Newark Avenue": [
+   39.962201,
+   -74.078507
+  ],
+  "Lavallette Avenue|New York Avenue": [
+   39.965536,
+   -74.074074
+  ],
+  "Lavallette Avenue|Pershing Boulevard": [
+   39.967797,
+   -74.075011
+  ],
+  "Lavallette Avenue|Virginia Avenue": [
+   39.967148,
+   -74.074945
+  ],
+  "Lavallette Boardwalk|Ortley Avenue": [
+   39.97756,
+   -74.064808
+  ],
+  "Liggett Road|Morton Drive": [
+   39.965096,
+   -74.081278
+  ],
+  "Liggett Road|Pershing Boulevard": [
+   39.965745,
+   -74.082067
+  ],
+  "Morton Drive|Pershing Boulevard": [
+   39.963936,
+   -74.08472
+  ],
+  "New Brunswick Avenue|Pershing Boulevard": [
+   39.967866,
+   -74.074432
+  ],
+  "Newark Avenue|Sturgis Road": [
+   39.962813,
+   -74.081656
+  ],
+  "Pershing Boulevard|Sturgis Road": [
+   39.961985,
+   -74.082102
+  ],
+  "West Central Avenue|Westmont Avenue": [
+   39.978705,
+   -74.069244
+  ]
+ }
+}
