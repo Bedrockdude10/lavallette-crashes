@@ -830,9 +830,12 @@ function fitToCorridors(pts){
   if (!pts.length) return;
   const bounds = L.latLngBounds(pts).pad(0.12);
   const fit = () => {
+    // Re-measure BEFORE the size check, not after. getSize() can return a stale
+    // non-zero box while the element is really 0x0, and fitBounds on a zero-size
+    // container returns a NaN centre and throws "Invalid LatLng object".
+    map.invalidateSize();
     const size = map.getSize();
     if (size.x < 40 || size.y < 40) return false;   // not laid out yet
-    map.invalidateSize();
     map.fitBounds(bounds);
     return true;
   };
