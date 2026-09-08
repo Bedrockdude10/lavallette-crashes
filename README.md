@@ -146,6 +146,25 @@ The hook is still there. Set `SHEET_URL` near the top of the `<script>` block in
 (including the `corridor` and `jurisdiction` columns — `corridor` must match a
 key in `data/streets.json` for a crash to count toward a crossing's score).
 
+## The basemap needs a (free) key
+
+CARTO now stamps **"API KEY REQUIRED"** across every tile of its `light_all`
+style, which is the style this page's palette was designed around. (The Hopewell
+map has the same problem, for the same reason.)
+
+Get a free key at <https://carto.com/basemaps/apikey> and paste it into
+`CARTO_API_KEY` near the top of the `<script>` block in `index.html`.
+
+Until that is set, the map falls back to **Esri's World Light Gray Canvas**,
+which needs no key and is a close visual match. Its one drawback: Esri publishes
+no tiles above zoom 16, so from the zoom-17 crossing view up, Leaflet upscales
+z16 tiles — the basemap goes soft while the pins and corridor bars stay sharp.
+
+> If the watermark survives after you paste a key, check the exact query
+> parameter on CARTO's page — this code sends `?api_key=<key>`, which is what
+> their basemap docs specify, but it is the one part of this I could not verify
+> without an actual key.
+
 ## Running and deploying
 
 The page uses `fetch` for both data files, so it needs to be served over HTTP —

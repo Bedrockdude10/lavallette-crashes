@@ -647,10 +647,28 @@ const ICONS = {
 // at z15; fitBounds() on the crossings tightens this once they load.
 const map = L.map('map', { zoomControl:false }).setView([39.9700, -74.0695], 15);
 L.control.zoom({ position:'bottomright' }).addTo(map);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution:'&copy; OpenStreetMap &copy; CARTO',
-  maxZoom:19
-}).addTo(map);
+// ---- Basemap ---------------------------------------------------------------
+// CARTO's "light_all" is the style this page's palette was built around, but
+// CARTO now stamps "API KEY REQUIRED" across every tile unless a key is sent.
+//
+// Paste a free key from https://carto.com/basemaps/apikey between the quotes
+// below and the light style comes back. Until then the map falls back to Esri's
+// Light Gray Canvas, which needs no key and is the closest match -- its only
+// drawback is that it has no tiles above zoom 16, so past that Leaflet upscales
+// z16 tiles (soft basemap, sharp data) rather than showing blank grey.
+const CARTO_API_KEY = "";
+
+const BASEMAP = CARTO_API_KEY ? {
+  url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?api_key=' + CARTO_API_KEY,
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  maxZoom: 19
+} : {
+  url: 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+  attribution: 'Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
+  maxZoom: 19,
+  maxNativeZoom: 16
+};
+L.tileLayer(BASEMAP.url, BASEMAP).addTo(map);
 
 // ---- Panel sheet ------------------------------------------------------------
 // Below 820px the panels sit under (or beside) the map in normal flow; the
