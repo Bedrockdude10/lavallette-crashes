@@ -1,6 +1,12 @@
 {
  "area": "Lavallette",
  "divided_ref": "NJ 35",
+ "barrel_directions": {
+  "Anna O Hankins Boulevard": "S",
+  "West Central Avenue": "S",
+  "East Central Avenue": "S",
+  "Grand Central Avenue": "N"
+ },
  "attribution": "Road geometry (c) OpenStreetMap contributors, ODbL",
  "streets": {
   "Jersey City Avenue": {
@@ -259,14 +265,16 @@
      "point": [
       39.959979,
       -74.07232
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.959849,
       -74.070674
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -294,14 +302,16 @@
      "point": [
       39.975791,
       -74.069704
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.975638,
       -74.068061
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -329,14 +339,16 @@
      "point": [
       39.96828,
       -74.070942
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.968117,
       -74.069286
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -364,14 +376,16 @@
      "point": [
       39.971295,
       -74.070446
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.971125,
       -74.068785
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -399,14 +413,16 @@
      "point": [
       39.980067,
       -74.067144
-     ]
+     ],
+     "direction": "N"
     },
     {
      "name": "West Central Avenue",
      "point": [
       39.980304,
       -74.068983
-     ]
+     ],
+     "direction": "S"
     }
    ],
    "line": [
@@ -434,14 +450,16 @@
      "point": [
       39.97057,
       -74.070573
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.9704,
       -74.068914
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -469,14 +487,16 @@
      "point": [
       39.962311,
       -74.071923
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.962158,
       -74.070281
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -504,14 +524,16 @@
      "point": [
       39.975064,
       -74.069832
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.974897,
       -74.068195
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -539,14 +561,16 @@
      "point": [
       39.979334,
       -74.067363
-     ]
+     ],
+     "direction": "N"
     },
     {
      "name": "West Central Avenue",
      "point": [
       39.979499,
       -74.069114
-     ]
+     ],
+     "direction": "S"
     }
    ],
    "line": [
@@ -574,14 +598,16 @@
      "point": [
       39.963777,
       -74.071683
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.96362,
       -74.070045
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -609,14 +635,16 @@
      "point": [
       39.976525,
       -74.069591
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.976361,
       -74.067943
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -644,14 +672,16 @@
      "point": [
       39.972038,
       -74.070325
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.97186,
       -74.068672
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -679,14 +709,16 @@
      "point": [
       39.967545,
       -74.071076
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.967382,
       -74.069424
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -714,14 +746,16 @@
      "point": [
       39.964526,
       -74.07156
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.964362,
       -74.069919
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -749,14 +783,16 @@
      "point": [
       39.965271,
       -74.071438
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.965114,
       -74.069792
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -784,14 +820,16 @@
      "point": [
       39.96158,
       -74.072065
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.96141,
       -74.070405
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -819,14 +857,16 @@
      "point": [
       39.977987,
       -74.069365
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.977828,
       -74.067707
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -854,14 +894,16 @@
      "point": [
       39.966072,
       -74.071314
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.965913,
       -74.069663
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -889,14 +931,16 @@
      "point": [
       39.969763,
       -74.070698
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.969607,
       -74.069035
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -924,14 +968,16 @@
      "point": [
       39.974287,
       -74.06996
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.974121,
       -74.06832
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -959,14 +1005,16 @@
      "point": [
       39.963043,
       -74.071804
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.962894,
       -74.070168
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -994,14 +1042,16 @@
      "point": [
       39.973504,
       -74.070084
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.97334,
       -74.068442
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -1029,14 +1079,16 @@
      "point": [
       39.960804,
       -74.072196
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.960644,
       -74.070545
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -1064,14 +1116,16 @@
      "point": [
       39.972762,
       -74.070206
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.972602,
       -74.068559
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -1099,14 +1153,16 @@
      "point": [
       39.966809,
       -74.071192
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.966648,
       -74.069543
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -1134,14 +1190,16 @@
      "point": [
       39.969011,
       -74.070826
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.968847,
       -74.069168
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -1169,14 +1227,16 @@
      "point": [
       39.978705,
       -74.069244
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.97858,
       -74.067573
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [
@@ -1204,14 +1264,16 @@
      "point": [
       39.977273,
       -74.069474
-     ]
+     ],
+     "direction": "S"
     },
     {
      "name": "Grand Central Avenue",
      "point": [
       39.977111,
       -74.067822
-     ]
+     ],
+     "direction": "N"
     }
    ],
    "line": [

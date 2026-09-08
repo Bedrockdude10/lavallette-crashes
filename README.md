@@ -14,12 +14,21 @@ files. Pins are coloured by who was involved and ringed by severity, exactly as
 in the Hopewell build.
 
 The new layer is **Route 35 crossings**. Route 35 runs the length of the borough
-as *two* one-way roadways about 140 m apart — Anna O Hankins Boulevard and Grand
-Central Avenue — so each side street crosses the highway twice. Each bar on the
-map is the stretch of one side street between the two roadways: what a person
-actually crosses to get from the bay side to the beach. Bars are shaded by how
-much crash harm is recorded there, and the panel on the right ranks the worst
-five.
+as *two* one-way roadways about 140 m apart, so each side street crosses the
+highway twice:
+
+| Roadway | Carries | Crashes |
+|---|---|---|
+| **Grand Central Avenue** | Route 35 **north** | 109 |
+| **Anna O Hankins Boulevard** | Route 35 **south** | 54 |
+| West Central Avenue | Route 35 south (north end) | 9 |
+| *not recorded* | | 18 |
+
+Each bar on the map is the stretch of one side street between the two roadways:
+what a person actually crosses to get from the bay side to the beach. Bars are
+shaded by how much crash harm is recorded there, and the panel on the right ranks
+the worst five. **Pins sit on the roadway the record names** — 172 of the 190
+Route 35 crashes — so the northbound and southbound problems read separately.
 
 As of the 2018–2022 data:
 
@@ -45,6 +54,10 @@ this gets shown to:
   to the 16 crashes where somebody outside a vehicle was hit, and the ranking
   re-sorts: Guyer Avenue goes to #1, on the strength of the borough's one
   pedestrian fatality (19 Oct 2019).
+- **The harm is lopsided by roadway.** 109 crashes northbound against 63
+  southbound, and at Reese Avenue — the worst crossing — it is **15 northbound
+  against 2 southbound**. That makes Reese a one-roadway problem, which is a much
+  cheaper thing to ask NJDOT for than a crossing-wide rebuild.
 
 ## The harm score
 
@@ -69,9 +82,9 @@ in every popup so you can see which is which.
 
 - **Proximity is not cause.** A crash logged at "NJ 35 and Reese Ave" was not
   necessarily *at* the crossing.
-- **Each bar covers about 140 m.** NJDOT records name the street pair but never
-  which of the two roadways, so the crash genuinely cannot be placed on one of
-  them. The corridor is drawn at exactly the precision the data has.
+- **Each bar spans both roadways, about 140 m.** The bar is the crossing, not the
+  crash. Individual pins are placed on a specific roadway where the record names
+  one (172 of 190); the other 18 sit between the two.
 - **Nothing recent is in here.** NJDOT runs about three years behind; 2022 is the
   latest published year as of September 2026. There is no current-year data.
 - **Only 5 closed years.** 209 crashes is enough to rank corridors and much more
@@ -98,6 +111,39 @@ python3 scripts/build_rows.py
 When NJDOT publishes 2023, add it to `--years`, re-run `pull_njdot.py` and
 `build_rows.py`, and update `YEARS_LABEL` in `index.html`. `build_streets.py`
 only needs re-running if the road network changed.
+
+### Which roadway a crash was on
+
+The records are **50 comma-fields wide, not 47**, and the extra ones carry the
+answer. `build_rows.py` reads:
+
+| Field | What it is | Populated |
+|---|---|---|
+| `[20]` | travel direction on the route (N/S/E/W) | 178 of 209 |
+| `[21]` | route number (`35`, `629`) | 168 |
+| `[24]` | mile post | 199 |
+| `[45]`/`[46]` | latitude / longitude | 111 |
+
+The direction field, matched against each barrel's one-way travel direction (which
+`build_streets.py` derives from OSM geometry, not a hardcoded name), names the
+roadway: **N → Grand Central Avenue, S → Anna O Hankins Boulevard**. 22 records
+also name the roadway outright, e.g. `NJ 35 / GRAND CENTRAL AVE`.
+
+That was checked against the records' own coordinates before being trusted:
+
+- **direction N lands nearest Grand Central 49 times out of 49**
+- direction S lands nearest Anna O Hankins 24 times out of 34 — and **6 of the 10
+  exceptions have coordinates 88–795 m from any part of Route 35**, so the
+  coordinate is wrong, not the direction
+- after assignment, pins sit a **median 0.0 m** (95th percentile 5 m) from the
+  roadway they claim, and **none** is closer to the other roadway
+
+Coordinates are used for the pin only when they land within **40 m** of the named
+roadway; otherwise the junction node is used and the coordinate discarded (73
+used, 34 rejected). Note this contradicts the Hopewell build's assumption that
+NJDOT coordinates are unusable — that was true of Mercer County's file (~5%
+populated, and the one value badly wrong), but Ocean County's are 53% populated
+and good.
 
 ### How street names are matched
 
@@ -146,24 +192,28 @@ The hook is still there. Set `SHEET_URL` near the top of the `<script>` block in
 (including the `corridor` and `jurisdiction` columns — `corridor` must match a
 key in `data/streets.json` for a crash to count toward a crossing's score).
 
-## The basemap needs a (free) key
+## The basemap
 
-CARTO now stamps **"API KEY REQUIRED"** across every tile of its `light_all`
-style, which is the style this page's palette was designed around. (The Hopewell
-map has the same problem, for the same reason.)
+**OpenFreeMap**, style `positron`. No API key, no account, no request limit.
+Positron is the same style lineage as the CARTO light basemap this page's palette
+was designed around, so it is a near-identical look and is sharp at every zoom.
 
-Get a free key at <https://carto.com/basemaps/apikey> and paste it into
-`CARTO_API_KEY` near the top of the `<script>` block in `index.html`.
+CARTO is no longer usable here: it stamps **"API KEY REQUIRED"** across every
+tile of `basemaps.cartocdn.com/light_all`, and it has no free tier to get a key
+from. **The Hopewell map still uses that URL and is still watermarked**; the fix
+there is this same swap.
 
-Until that is set, the map falls back to **Esri's World Light Gray Canvas**,
-which needs no key and is a close visual match. Its one drawback: Esri publishes
-no tiles above zoom 16, so from the zoom-17 crossing view up, Leaflet upscales
-z16 tiles — the basemap goes soft while the pins and corridor bars stay sharp.
+Positron is served as *vector* tiles, so the basemap is drawn by MapLibre GL
+while every data layer stays plain Leaflet — `maplibre-gl-leaflet` bridges the
+two, and markers, polylines and popups are untouched. The cost is ~800 KB of
+MapLibre JS from a CDN and a WebGL requirement.
 
-> If the watermark survives after you paste a key, check the exact query
-> parameter on CARTO's page — this code sends `?api_key=<key>`, which is what
-> their basemap docs specify, but it is the one part of this I could not verify
-> without an actual key.
+Two keyless raster alternatives, if that trade is ever unwelcome:
+
+| Option | Trade-off |
+|---|---|
+| Esri World Light Gray Canvas | Close palette match, raster, no extra JS — but **no tiles above zoom 16**, so the crossing view goes soft |
+| OSM standard tiles | Sharp to z19, no extra JS — but colourful (blue water, pink roads), fights the harm colours |
 
 ## Running and deploying
 

@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
   :root{
     --paper:#F1F3EF;
@@ -602,6 +603,8 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
 // ============================================================================
@@ -629,6 +632,11 @@ const STREETS_URL = "data/streets.json";
 // a 5-year total as an annual rate, and so the ~3-year NJDOT lag is visible.
 const YEARS_LABEL = "2018\u20132022";
 
+// Route 35's two one-way roadways. Which one a crash was on comes from the
+// record's route-direction field (and, for 22 of them, from the record naming
+// the roadway outright) -- see scripts/build_rows.py.
+const DIR_LABEL = { N:'North', S:'South', E:'East', W:'West' };
+
 // ---- Visual config -------------------------------------------------------
 const TYPE_COLOR = { bicycle:"#2B6CB0", pedestrian:"#6B4C9A", vehicle:"#B0562B", other:"#5B6B73" };
 const TYPE_LABEL = { bicycle:"Bicycle", pedestrian:"Pedestrian", vehicle:"Vehicle only", other:"Other" };
@@ -648,27 +656,21 @@ const ICONS = {
 const map = L.map('map', { zoomControl:false }).setView([39.9700, -74.0695], 15);
 L.control.zoom({ position:'bottomright' }).addTo(map);
 // ---- Basemap ---------------------------------------------------------------
-// CARTO's "light_all" is the style this page's palette was built around, but
-// CARTO now stamps "API KEY REQUIRED" across every tile unless a key is sent.
+// OpenFreeMap's "Positron" style: no API key, no account, no request limit, and
+// Positron is the same lineage as the CARTO light style this page's palette was
+// built around -- so it is a near-identical look, sharp at every zoom.
 //
-// Paste a free key from https://carto.com/basemaps/apikey between the quotes
-// below and the light style comes back. Until then the map falls back to Esri's
-// Light Gray Canvas, which needs no key and is the closest match -- its only
-// drawback is that it has no tiles above zoom 16, so past that Leaflet upscales
-// z16 tiles (soft basemap, sharp data) rather than showing blank grey.
-const CARTO_API_KEY = "";
-
-const BASEMAP = CARTO_API_KEY ? {
-  url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?api_key=' + CARTO_API_KEY,
-  attribution: '&copy; OpenStreetMap &copy; CARTO',
-  maxZoom: 19
-} : {
-  url: 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-  attribution: 'Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
-  maxZoom: 19,
-  maxNativeZoom: 16
-};
-L.tileLayer(BASEMAP.url, BASEMAP).addTo(map);
+// CARTO itself is not an option any more: it stamps "API KEY REQUIRED" across
+// every tile, and it no longer has a free tier to get a key from.
+//
+// These are VECTOR tiles, so the basemap is drawn by MapLibre GL while every
+// data layer above it stays plain Leaflet -- the maplibre-gl-leaflet plugin
+// bridges the two, so markers, polylines and popups are unchanged.
+L.maplibreGL({
+  style: 'https://tiles.openfreemap.org/styles/positron',
+  attribution: '&copy; <a href="https://openfreemap.org/">OpenFreeMap</a> ' +
+               '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
 
 // ---- Panel sheet ------------------------------------------------------------
 // Below 820px the panels sit under (or beside) the map in normal flow; the
@@ -756,9 +758,12 @@ function popupHTML(crash){
       <div class="meta">${crash.municipality || ''}</div>
       <div class="sev" style="color:${sevColor}">${sevLabel}</div>
       ${desc}
-      ${crash.corridor ? `<p class="desc" style="opacity:.75">Placed between the two
-        Route&nbsp;35 roadways: the crash record names <em>Route&nbsp;35</em> and
-        ${crash.corridor}, but not which of the two it was on.</p>` : ''}
+      ${crash.corridor && crash.direction ? `<p class="desc" style="opacity:.75">On
+        <strong>Route&nbsp;35 ${DIR_LABEL[crash.direction] || crash.direction}</strong>
+        (${crash.barrel}), from the record's route-direction field.</p>` : ''}
+      ${crash.corridor && !crash.direction ? `<p class="desc" style="opacity:.75">The
+        record does not say which of the two Route&nbsp;35 roadways this was on, so
+        it sits between them.</p>` : ''}
       ${src}
     </div>`;
 }
@@ -819,6 +824,8 @@ function normalizeRow(r){
     lng: parseFloat(r.lng),
     crash_type: (r.crash_type || 'other').trim().toLowerCase(),
     corridor: (r.corridor || '').trim(),
+    barrel: (r.barrel || '').trim(),
+    direction: (r.direction || '').trim(),
     jurisdiction: (r.jurisdiction || '').trim(),
     severity: (r.severity || 'property_damage').trim().toLowerCase(),
     description: (r.description || '').trim(),
@@ -940,7 +947,9 @@ function scoreCorridors(crashes){
   crashes.forEach(c => {
     if (!c.corridor) return;
     let e = out.get(c.corridor);
-    if (!e) out.set(c.corridor, e = { name:c.corridor, score:0, n:0, byType:{}, worst:null, summer:0 });
+    if (!e) out.set(c.corridor, e = { name:c.corridor, score:0, n:0, byType:{},
+                                      worst:null, summer:0, byDir:{} });
+    e.byDir[c.direction || '?'] = (e.byDir[c.direction || '?'] || 0) + 1;
     e.score += harmOf(c);
     e.n += 1;
     e.byType[c.crash_type] = (e.byType[c.crash_type] || 0) + 1;
@@ -961,6 +970,19 @@ function peopleOutside(e){
   return (e.byType.pedestrian || 0) + (e.byType.bicycle || 0);
 }
 
+// Which roadway the harm is actually on. Worth stating per crossing rather than
+// only in aggregate: at Reese Avenue it is 15 northbound against 2 southbound,
+// which makes it a one-roadway problem rather than a crossing-wide one.
+function dirSplitHTML(e){
+  const n = e.byDir.N || 0, s = e.byDir.S || 0, u = e.byDir['?'] || 0;
+  if (!n && !s) return '';
+  const parts = [];
+  if (n) parts.push(`<strong>${n}</strong> northbound`);
+  if (s) parts.push(`<strong>${s}</strong> southbound`);
+  if (u) parts.push(`${u} roadway not recorded`);
+  return `<p class="desc">${parts.join(' · ')}.</p>`;
+}
+
 function corridorPopupHTML(e, rank){
   const pb = peopleOutside(e);
   const bits = Object.entries(e.byType)
@@ -976,6 +998,7 @@ function corridorPopupHTML(e, rank){
       ${pb ? `<p class="desc"><strong>${pb} involved someone outside a vehicle</strong>
         (on foot or on a bike).</p>` : ''}
       ${e.summer ? `<p class="desc">${e.summer} of ${e.n} happened June&ndash;September.</p>` : ''}
+      ${dirSplitHTML(e)}
       <p class="desc" style="opacity:.75">Route 35 is a <strong>state</strong>
         highway, so changes here are NJDOT's to make, not the borough's.</p>
     </div>`;
@@ -1045,12 +1068,14 @@ function renderPriorities(){
 
   const total = scored.reduce((a, e) => a + e.n, 0);
   const outside = scored.reduce((a, e) => a + peopleOutside(e), 0);
+  const withDir = scored.reduce((a, e) => a + (e.byDir.N || 0) + (e.byDir.S || 0), 0);
   priorityEl.querySelector('.caveat').innerHTML =
     `${total} of the borough's crashes sit on one of these ${Object.keys(corridors || {}).length}
      Route&nbsp;35 crossings; ${outside} involved someone on foot or on a bike.
      <strong>Proximity is not cause</strong> &mdash; a crash logged at a cross street
-     was not necessarily at the crossing itself, and NJDOT records name the street
-     pair but not the roadway, so each bar covers about 140&nbsp;m.
+     was not necessarily at the crossing itself. Each bar spans both Route&nbsp;35
+     roadways, about 140&nbsp;m; the pins sit on the roadway the record names, which
+     ${withDir} of ${total} of them do.
      Counts are 5 closed years (${YEARS_LABEL}); NJDOT runs about three years
      behind, so nothing recent is in here.`;
 }

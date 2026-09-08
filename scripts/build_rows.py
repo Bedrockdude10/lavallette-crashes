@@ -35,7 +35,20 @@ I_KEY, I_MUNI, I_DATE, I_TIME = 0, 2, 3, 5
 I_KILLED, I_INJURED, I_PEDK, I_PEDI = 9, 10, 11, 12
 I_SEVERITY, I_CRASHTYPE, I_NVEH = 13, 17, 18
 I_LOCATION, I_DIST, I_UNIT, I_DIR, I_CROSS = 19, 35, 36, 37, 38
-MIN_FIELDS = 47
+# The records are 50 fields wide, not 47. These four are the difference between
+# "somewhere along a 140 m corridor" and "on the northbound roadway":
+#   [20] travel direction on the route (N/S/E/W)  -- populated for 178 of 209
+#   [21] route number                             -- "35", "629"
+#   [24] mile post
+#   [45]/[46] latitude / longitude                -- populated for 111 of 209
+I_ROUTE_DIR, I_ROUTE_NO, I_MILEPOST = 20, 21, 24
+I_LAT, I_LNG = 45, 46
+MIN_FIELDS = 50
+
+# A record's own coordinate is trusted only if it lands this close to the roadway
+# the record names. Beyond it the coordinate is wrong, not the roadway: 6 of
+# Lavallette's Route 35 records sit 88-795 m from any part of Route 35.
+COORD_TRUST_M = 40.0
 
 CT = {
     "01": ("vehicle", "rear-end collision"), "02": ("vehicle", "same-direction sideswipe"),
@@ -55,6 +68,12 @@ SUFFIX = {"AVE": "AVENUE", "AV": "AVENUE", "ST": "STREET", "RD": "ROAD", "PL": "
           "BLV": "BOULEVARD", "PKWY": "PARKWAY", "TER": "TERRACE", "WY": "WAY",
           "CIR": "CIRCLE", "HWY": "HIGHWAY", "BE": "BEACH"}
 M_PER_DEG_LAT = 111320.0
+
+
+def haversine_m(a, b):
+    dlat = (b[0] - a[0]) * M_PER_DEG_LAT
+    dlng = (b[1] - a[1]) * M_PER_DEG_LAT * math.cos(math.radians((a[0] + b[0]) / 2))
+    return math.hypot(dlat, dlng)
 
 
 def norm(s):
@@ -92,6 +111,7 @@ class Streets:
         self.divided_ref = d["divided_ref"]
         self.streets = d["streets"]
         self.corridors = d["corridors"]
+        self.barrel_directions = d.get("barrel_directions", {})
         self.intersections = d["intersections"]
         self.by_norm = {norm(n): n for n in self.streets}
         self.by_ref = collections.defaultdict(list)
@@ -148,6 +168,20 @@ class Streets:
         return (self.divided_ref in refs
                 or self.streets.get(name, {}).get("ref") == self.divided_ref)
 
+    def barrel_at(self, cross, direction):
+        """The point where the barrel travelling `direction` meets `cross`.
+
+        This is what turns "NJ 35 at Reese Ave" into a point on the northbound
+        roadway rather than a point 70 m from each of two roadways.
+        """
+        c = self.corridors.get(cross)
+        if not c or not direction:
+            return None, None
+        for b in c["barrels"]:
+            if b.get("direction") == direction:
+                return b["name"], b["point"]
+        return None, None
+
     def junction(self, a_names, a_refs, b_names, b_refs):
         """-> (lat, lng, label_road, corridor_cross | None)."""
         # On the divided highway, place on the corridor keyed by the OTHER street:
@@ -202,6 +236,7 @@ def main():
         sys.exit(f"No *Accidents.txt in {args.datadir} — run scripts/pull_njdot.py first")
 
     rows, no_pin = [], []
+    stats = collections.Counter()
     for path in files:
         for line in open(path, encoding="latin-1"):
             p = [c.strip() for c in line.split(",")]
@@ -220,13 +255,58 @@ def main():
             b_names, b_refs = st.resolve(g(p, I_CROSS))
             lat, lng, road, corridor = st.junction(a_names, a_refs, b_names, b_refs)
 
+            # ---- which roadway of the divided highway? ----
+            # Preference order, most to least direct:
+            #   1. the record names a barrel outright ("NJ 35 / GRAND CENTRAL AVE")
+            #   2. the route-direction field, matched to the barrel that travels
+            #      that way (N -> Grand Central, S -> Anna O Hankins here)
+            barrel = barrel_dir = ""
+            if corridor:
+                named = [n for n in (a_names + b_names) if n in st.barrel_directions]
+                if named:
+                    barrel = named[0]
+                    barrel_dir = st.barrel_directions[barrel]
+                    stats["barrel_named"] += 1
+                elif g(p, I_ROUTE_NO) == st.divided_ref.split()[-1]:
+                    rd = g(p, I_ROUTE_DIR)
+                    bname, bpoint = st.barrel_at(corridor, rd)
+                    if bname:
+                        barrel, barrel_dir = bname, rd
+                        stats["barrel_from_direction"] += 1
+                if barrel:
+                    bn, bp = st.barrel_at(corridor, barrel_dir)
+                    if bp:
+                        lat, lng = bp[0], bp[1]
+                else:
+                    stats["barrel_unknown"] += 1
+
+            # ---- the record's own coordinate, where it is trustworthy ----
+            # More precise than a junction node when it is right, and demonstrably
+            # wrong often enough that it has to be checked against the roadway the
+            # record names before being believed.
+            rlat, rlng = g(p, I_LAT), g(p, I_LNG)
+            if rlat and rlng and lat is not None:
+                try:
+                    cand = (float(rlat), -abs(float(rlng)))
+                except ValueError:
+                    cand = None
+                if cand and 38.5 <= cand[0] <= 41.5 and -75.6 <= cand[1] <= -73.8:
+                    off = haversine_m(cand, (lat, lng))
+                    if off <= COORD_TRUST_M:
+                        lat, lng = round(cand[0], 6), round(cand[1], 6)
+                        stats["coord_used"] += 1
+                    else:
+                        stats["coord_rejected"] += 1
+
             road_label = (road or (a_names[0] if a_names else "")
                           or (a_refs[0] if a_refs else "") or g(p, I_LOCATION).title())
             if road_label == st.divided_ref:
                 road_label = "Route 35"
             cross_label = corridor or (b_names[0] if b_names else "") or (b_refs[0] if b_refs else "")
             if corridor:
-                loc_label = f"Route 35 & {corridor}"
+                dir_word = {"N": "North", "S": "South", "E": "East", "W": "West"}.get(barrel_dir, "")
+                loc_label = (f"Route 35 {dir_word} & {corridor}" if dir_word
+                             else f"Route 35 & {corridor}")
             elif cross_label:
                 loc_label = (f"{road_label} & {cross_label}" if at_int
                              else f"{road_label} near {cross_label}")
@@ -258,6 +338,8 @@ def main():
                        lng=lng if lng is not None else "",
                        crash_type=ctype, severity=sev,
                        corridor=corridor or "",
+                       barrel=barrel,
+                       direction=barrel_dir,
                        jurisdiction=(st.corridors[corridor]["jurisdiction"] if corridor
                                      else st.streets.get(road_label, {}).get("jurisdiction", "")),
                        description=desc, source_url="")
@@ -267,7 +349,8 @@ def main():
 
     rows.sort(key=lambda r: (r["date"], r["time"]))
     hdr = ["id", "date", "time", "municipality", "location", "lat", "lng",
-           "crash_type", "severity", "corridor", "jurisdiction", "description", "source_url"]
+           "crash_type", "severity", "corridor", "barrel", "direction",
+           "jurisdiction", "description", "source_url"]
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     with open(args.out, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=hdr)
@@ -285,10 +368,17 @@ def main():
         print(f"\n--- {len(no_pin)} records with no pin ---", file=sys.stderr)
         for case, a, b in no_pin:
             print(f"  {case:14} {a[:30]:32} | {b[:28]}", file=sys.stderr)
+    print("\n--- roadway assignment on the divided highway ---", file=sys.stderr)
+    for k in ("barrel_named", "barrel_from_direction", "barrel_unknown",
+              "coord_used", "coord_rejected"):
+        print(f"  {k:24}{stats[k]}", file=sys.stderr)
+
     placed = sum(1 for r in rows if r["lat"] != "")
     onc = sum(1 for r in rows if r["corridor"])
+    onb = sum(1 for r in rows if r["barrel"])
     print(f"\n{len(rows)} rows, {placed} placed ({len(rows)-placed} unplaced), "
-          f"{onc} on a Route 35 corridor -> {args.out}", file=sys.stderr)
+          f"{onc} on a Route 35 corridor, {onb} pinned to a specific roadway "
+          f"-> {args.out}", file=sys.stderr)
 
 
 if __name__ == "__main__":

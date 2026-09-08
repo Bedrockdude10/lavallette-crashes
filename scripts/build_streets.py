@@ -57,6 +57,29 @@ def overpass(area):
     sys.exit(f"Overpass failed after 6 attempts: {last}")
 
 
+def way_bearing(geom):
+    """Compass bearing from a one-way's first node to its last.
+
+    OSM stores a oneway's nodes in travel order, so this is the direction traffic
+    actually moves -- which is what tells us that Grand Central Avenue is Route 35
+    NORTH and Anna O Hankins Boulevard is Route 35 SOUTH. Deriving it beats
+    hardcoding the two names: it is the fact the crash records' direction field
+    has to be matched against.
+    """
+    a, b = geom[0], geom[-1]
+    dlat = b[0] - a[0]
+    dlng = (b[1] - a[1]) * math.cos(math.radians(a[0]))
+    return (math.degrees(math.atan2(dlng, dlat)) + 360) % 360
+
+
+def cardinal(brg):
+    if brg < 45 or brg > 315:
+        return "N"
+    if 135 < brg < 225:
+        return "S"
+    return "E" if brg <= 135 else "W"
+
+
 def midpoint(a, b):
     return [round((a[0] + b[0]) / 2, 6), round((a[1] + b[1]) / 2, 6)]
 
@@ -122,6 +145,15 @@ def main():
     # the divided highway's barrels, and one corridor per cross street
     barrel_names = sorted(n for n, s in streets.items()
                           if s["ref"] == args.divided_ref)
+
+    # Travel direction of each barrel, from the one-way geometry.
+    barrel_dir = {}
+    for w in ways:
+        n = w["tags"]["name"]
+        if n in barrel_names and w["tags"].get("oneway") == "yes":
+            geom = [(g["lat"], g["lon"]) for g in w["geometry"]]
+            if len(geom) > 1 and n not in barrel_dir:
+                barrel_dir[n] = cardinal(way_bearing(geom))
     corridors = {}
     if barrel_names:
         print(f"\n{args.divided_ref} is carried on {len(barrel_names)} named ways: "
@@ -145,7 +177,8 @@ def main():
             corridors[cross] = {
                 "ref": args.divided_ref,
                 "jurisdiction": jurisdiction(args.divided_ref),
-                "barrels": [{"name": na, "point": pa}, {"name": nb, "point": pb}],
+                "barrels": [{"name": na, "point": pa, "direction": barrel_dir.get(na, "")},
+                            {"name": nb, "point": pb, "direction": barrel_dir.get(nb, "")}],
                 "line": [pa, pb],
                 "midpoint": midpoint(pa, pb),
                 "width_m": round(metres(pa, pb), 1),
@@ -153,6 +186,8 @@ def main():
 
     out = {"area": args.osm_area,
            "divided_ref": args.divided_ref,
+           # travel direction per barrel, e.g. {"Grand Central Avenue": "N", ...}
+           "barrel_directions": barrel_dir,
            "attribution": "Road geometry (c) OpenStreetMap contributors, ODbL",
            "streets": streets,
            "corridors": corridors,
@@ -163,6 +198,10 @@ def main():
     json.dump(out, open(args.out, "w"), indent=1)
 
     ws = [c["width_m"] for c in corridors.values()]
+    if barrel_dir:
+        print("barrel travel directions: "
+              + ", ".join(f"{n} -> {d}" for n, d in sorted(barrel_dir.items())),
+              file=sys.stderr)
     print(f"\n{len(streets)} streets, {len(out['intersections'])} intersections, "
           f"{len(corridors)} {args.divided_ref} corridors", file=sys.stderr)
     if ws:
