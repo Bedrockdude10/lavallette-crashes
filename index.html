@@ -696,7 +696,11 @@ const stackedSheet = window.matchMedia('(max-width:819px) and (orientation:portr
 // opened in. The min-widths in CSS are vw-based and keep up with rotation.
 const POPUP_OPTS = {
   maxWidth: Math.max(220, Math.min(300, window.innerWidth - 44)),
-  autoPanPadding: [12, 12]
+  // The header sits over the top of the map, so a symmetric pan padding lets a
+  // tall popup auto-pan straight under it. Reserve the header's height plus a
+  // margin at the top instead.
+  autoPanPaddingTopLeft: [12, 68],
+  autoPanPaddingBottomRight: [12, 16]
 };
 
 // Bound popups by the map pane rather than the window, so they stay inside the
